@@ -316,6 +316,7 @@ class CAMBdata(F2003Class):
         if CAMBdata_gettransfers(byref(self), byref(params), byref(c_int(1 if only_transfers else 0)),
                                  byref(c_int(1 if only_time_sources else 0))):
             config.check_global_error('calc_transfer')
+
     def _check_powers(self, params=None):
         if params is None:
             params = self.Params
@@ -446,7 +447,6 @@ class CAMBdata(F2003Class):
         P = {}
         if params is not None:
             self.calc_power_spectra(params)
-            print(self.calc_power_spectra(params))
         lmax = self._lmax_setting(lmax)
         for spectrum in spectra:
             P[spectrum] = getattr(self, 'get_' + spectrum + '_cls')(lmax, CMB_unit=CMB_unit,
@@ -1593,7 +1593,7 @@ class CAMBdata(F2003Class):
 
     def sound_horizon(self, z):
         """
-        Get comoving sound horizon as function of redshift in Megaparsees, the integral of the sound speed
+        Get comoving sound horizon as function of redshift in Megaparsecs, the integral of the sound speed
         up to given redshift.
 
         :param z: redshift or array of redshifts

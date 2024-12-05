@@ -44,7 +44,6 @@ rho_de = Function('rho_de', description='dark energy density', camb_var='grhov_t
 p_b = Function('p_b', description='baryon pressure', camb_sub='0')(t)
 p_nu = Function('p_nu', description='massive neutrino pressure')(t)
 w_de = Function('w_de', camb_var='w_lam', description='fluid dark energy equation of state')(t)
-
 p_g = rho_g / 3
 p_r = rho_r / 3
 p_c = 0
@@ -504,7 +503,6 @@ tot_pert_subs = [
 
 
 def define_variable(name, namespace=None, order=1):
-    print("defining", name)
     namespace = namespace or globals()
     if name not in namespace:
         namespace[name] = sympy.Function(name, perturbation_order=order)(t)
@@ -634,7 +632,6 @@ def camb_fortran(expr, name='camb_function', frame='CDM', expand=False):
                      'ddvisibility dvisibility dopacity ddopacity'
     camb_arr_vars = 'Edot E'
 
-    print("camb_fortran")
     tau = _camb_cache.setdefault('tau', Symbol('tau'))
 
     etakdot, qgdot, qrdot, vbdot, pigdot, pirdot, pinudot, octg, octgdot, \
@@ -715,7 +712,6 @@ _default_flags = None
 
 
 def get_default_compiler():
-    print("get_default_compiler")
     global _default_compiler, _default_flags
     if _default_compiler:
         return _default_compiler
@@ -852,7 +848,6 @@ def compile_source_function_code(code_body, file_path='', compiler=None, fflags=
 
 
 def compile_sympy_to_camb_source_func(sources, code_path=None, frame='CDM'):
-    print("compile_sympy_to_camb_source_func")
     code = ''
     if not isinstance(sources, (list, tuple)):
         sources = [sources]

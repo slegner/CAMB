@@ -257,8 +257,10 @@
     real(dl) noSwitch, smallTime
     !Sources
     real(dl) tau_switch_saha, Delta_TM, xe,a,tau_switch_evolve_TM
+
     noSwitch= State%tau0+1
     smallTime =  min(tau, 1/EV%k_buf)/100
+
     tau_switch_ktau = noSwitch
     tau_switch_no_nu_multpoles= noSwitch
     tau_switch_no_phot_multpoles= noSwitch
@@ -267,13 +269,14 @@
     tau_switch_nu_massless = noSwitch
     tau_switch_nu_nonrel = noSwitch
     tau_switch_nu_massive= noSwitch
+
     !Sources
     tau_switch_saha=noSwitch
     if (CP%Evolve_delta_xe .and. EV%saha)  tau_switch_saha = EV%ThermoData%recombination_saha_tau
     tau_switch_evolve_TM=noSwitch
     if (EV%Evolve_baryon_cs .and. .not. EV%Evolve_tm) tau_switch_evolve_TM = EV%ThermoData%recombination_Tgas_tau
 
-    ! Print current values of key parameters affecting y
+    !Evolve equations from tau to tauend, performing switches in equations if necessary.
 
     if (.not. EV%high_ktau_neutrino_approx .and. .not. EV%no_nu_multpoles ) then
         tau_switch_ktau=  max(20, EV%lmaxnr-4)/EV%k_buf
@@ -424,6 +427,7 @@
             EV=EVout
             y(EV%Tg_ix) =y(EV%g_ix)/4 ! assume delta_TM = delta_T_gamma
         end if
+
         call GaugeInterface_EvolveScal(EV,tau,y,tauend,tol1,ind,c,w)
         return
     end if
@@ -1610,6 +1614,7 @@
     real(dl) tau
     real(dl), target :: sources(:)
     integer, intent(in) :: num_custom_sources
+
     yprime = 0
     EV%OutputSources => Sources
     EV%OutputStep = j
@@ -2127,6 +2132,7 @@
     real(dl), intent(in) :: tau
     real, target :: Arr(:)
     real(dl) y(EV%nvar),yprime(EV%nvar)
+
     yprime = 0
     EV%OutputTransfer =>  Arr
     call derivs(EV,EV%ScalEqsToPropagate,tau,y,yprime)
@@ -2188,6 +2194,7 @@
         call EV%ThermoData%Values(tau,a,cs2,opacity)
     end if
     a2=a*a
+
     etak=ay(ix_etak)
     
     !  CDM variables
@@ -2213,7 +2220,7 @@
         Pgrhova2 = P_dark_energy_t * State%grhov * a2
     end if
 
-    !total =ns: matter terms first, then add massive nu, de and radiation
+    !total perturbations: matter terms first, then add massive nu, de and radiation
     !  8*pi*a*a*SUM[rho_i*clx_i]
     dgrho_matter=grhob_t*clxb+grhoc_t*clxc
     !  8*pi*a*a*SUM[(rho_i+p_i)*v_i]

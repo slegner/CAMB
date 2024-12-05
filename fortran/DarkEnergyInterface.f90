@@ -188,6 +188,7 @@
     integer, intent(in) :: n
     real(dl), intent(in) :: a(n), w(n)
     real(dl), allocatable :: integral(:)
+
     if (abs(a(size(a)) -1) > 1e-5) error stop 'w table must end at a=1'
 
     this%use_tabulated_w = .true.
@@ -233,7 +234,6 @@
 
     w = this%w_lam
     wa = this%wa
-    print *, 'Effective w, wa', w, wa
 
     end subroutine TDarkEnergyEqnOfState_Effective_w_wa
 
@@ -294,6 +294,7 @@
         call File%LoadTxt(Ini%Read_String('wafile'), table)
         call this%SetwTable(table(:,1),table(:,2), size(table(:,1)))
     endif
+
     end subroutine TDarkEnergyEqnOfState_ReadParams
 
 

@@ -1065,7 +1065,6 @@
     end do
     grhov_t = grhov_t/a**2
 
-
     end subroutine CAMBdata_DarkEnergyStressEnergy
 
     function rofChi(this,Chi) !sinh(chi) for open, sin(chi) for closed.
@@ -1706,6 +1705,7 @@
     real(dl) dlna, zstar_min, zstar_max
     real(dl) reion_z_start, reion_z_complete
     Type(CAMBParams), pointer :: CP
+
     CP => State%CP
 
     !Allocate memory outside parallel region to keep ifort happy
@@ -3116,7 +3116,6 @@
         if (hnorm) PK=  PK * h**3
     end if
 
-    print *, 'Transfer_GetUnsplinedPower done', PK(:,:)
     end subroutine Transfer_GetUnsplinedPower
 
     subroutine Transfer_GetNonLinRatio_index(State,M, ratio, itf)

@@ -431,6 +431,7 @@
                 + State%CLData%Cl_tensor(l, CT_Temp:CT_Cross)
         end if
     end do
+
     end subroutine CAMB_SetTotCls
 
     subroutine CAMB_SetUnlensedCls(State,lmax, unlensed_cls)
@@ -577,10 +578,12 @@
     real(dl), target :: sources(nsources), custom_sources(ncustomsources)
     real, target :: Arr(Transfer_max)
     procedure(obj_function) :: dtauda
+
     w=0
     y=0
     taustart = GetTauStart(min(500._dl,EV%q))
     call initial(EV,y, taustart)
+
     tau=taustart
     ind=1
     tol1=tol/exp(CP%Accuracy%AccuracyBoost*CP%Accuracy%IntTolBoost-1)

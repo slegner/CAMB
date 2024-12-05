@@ -321,7 +321,6 @@ def read_ini(ini_filename, no_validate=False):
             config.check_global_error('read_ini')
     finally:
         if data:
-            print(data)
             os.unlink(ini_filename)
     return cp
 

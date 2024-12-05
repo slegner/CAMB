@@ -227,6 +227,7 @@
     character(LEN=len(global_error_message)) :: ErrMsg
     Type(TIniFile) :: Ini
     logical bad
+
     call Ini%Open(InputFile, bad, .false.)
     ErrMsg = ''
     CAMB_ReadParamFile = CAMB_ReadParams(P, Ini, ErrMsg)

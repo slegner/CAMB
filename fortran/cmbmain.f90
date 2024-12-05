@@ -980,6 +980,7 @@
     y=0
     call initial(EV,y, taustart)
     if (global_error_flag/=0) return
+
     tau=taustart
     ind=1
 

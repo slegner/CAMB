@@ -114,6 +114,7 @@
         dgqe=0
         return
     end if
+
     k2=k**2
     !ppf
     grhoT = grho - grhov_t
