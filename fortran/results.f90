@@ -1053,17 +1053,18 @@
 
     end subroutine GetComputedPKRedshifts
 
-    subroutine CAMBdata_DarkEnergyStressEnergy(this, a, grhov_t, w, n)
+    subroutine CAMBdata_DarkEnergyStressEnergy(this, a, grhov_t, w, P, n)
     class(CAMBdata) :: this
     integer, intent(in) :: n
     real(dl), intent(in) :: a(n)
-    real(dl), intent(out) :: grhov_t(n), w(n)
+    real(dl), intent(out) :: grhov_t(n), w(n), P(n)
     integer i
 
     do i=1, n
-        call this%CP%DarkEnergy%BackgroundDensityAndPressure(1._dl, a(i), grhov_t(i), w(i))
+        call this%CP%DarkEnergy%BackgroundDensityAndPressure(1._dl, a(i), grhov_t(i), w(i), P(i))
     end do
     grhov_t = grhov_t/a**2
+
 
     end subroutine CAMBdata_DarkEnergyStressEnergy
 
@@ -1705,7 +1706,6 @@
     real(dl) dlna, zstar_min, zstar_max
     real(dl) reion_z_start, reion_z_complete
     Type(CAMBParams), pointer :: CP
-
     CP => State%CP
 
     !Allocate memory outside parallel region to keep ifort happy
@@ -3024,7 +3024,7 @@
         this%Cl_tensor(CP%Min_l:CP%Max_l_tensor, CT_Temp:CT_Cross) =  &
             this%Cl_tensor(CP%Min_l:CP%Max_l_tensor, CT_Temp:CT_Cross) * Norm
     end if
-
+    
     end subroutine TCLdata_NormalizeClsAtL
 
     end module results
@@ -3116,6 +3116,7 @@
         if (hnorm) PK=  PK * h**3
     end if
 
+    print *, 'Transfer_GetUnsplinedPower done', PK(:,:)
     end subroutine Transfer_GetUnsplinedPower
 
     subroutine Transfer_GetNonLinRatio_index(State,M, ratio, itf)

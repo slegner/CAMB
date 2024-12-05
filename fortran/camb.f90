@@ -227,7 +227,6 @@
     character(LEN=len(global_error_message)) :: ErrMsg
     Type(TIniFile) :: Ini
     logical bad
-
     call Ini%Open(InputFile, bad, .false.)
     ErrMsg = ''
     CAMB_ReadParamFile = CAMB_ReadParams(P, Ini, ErrMsg)
@@ -240,6 +239,8 @@
     use NonLinear
     use DarkEnergyFluid
     use DarkEnergyPPF
+    use DarkEnergyPressure
+    use DarkEnergyPressurePPF
     use Quintessence
     use results
 #ifdef COSMOREC
@@ -407,6 +408,8 @@
         allocate (TDarkEnergyFluid::P%DarkEnergy)
     else if (DarkEneryModel == 'PPF') then
         allocate (TDarkEnergyPPF::P%DarkEnergy)
+    else if (DarkEneryModel == 'PRESSUREPPF') then
+        allocate (TDarkEnergyPressurePPF::P%DarkEnergy)
     else if (DarkEneryModel == 'AXIONEFFECTIVEFLUID') then
         allocate (TAxionEffectiveFluid::P%DarkEnergy)
     else if (DarkEneryModel == 'EARLYQUINTESSENCE') then

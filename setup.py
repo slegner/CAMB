@@ -95,9 +95,9 @@ def make_library(cluster=False):
             print('WARNING: gfortran 8.2.0 may be buggy and give unreliable results or crashes, upgrade gfortran.')
     if _compile.is_windows:
         COMPILER = "gfortran"
-        FFLAGS = "-shared -static -cpp -fopenmp -O3 -fmax-errors=4"
-        # FFLAGS = "-shared -static -cpp -fopenmp -g -fbacktrace -ffpe-trap=invalid,overflow,zero " \
-        #         "-fbounds-check -fmax-errors=4"
+        #FFLAGS = "-shared -static -cpp -fopenmp -O3 -fmax-errors=4"
+        FFLAGS = "-shared -static -cpp -fopenmp -g -fbacktrace -ffpe-trap=invalid,overflow,zero " \
+                 "-fbounds-check -fmax-errors=4"
         if _compile.is_32_bit:
             FFLAGS = "-m32 " + FFLAGS
         if not ok:
@@ -179,8 +179,9 @@ def make_library(cluster=False):
                           'E.g. on ubuntu install with "sudo apt install make" (or use build-essential package).')
         get_forutils()
         print("Compiling source...")
-        subprocess.call("make python PYCAMB_OUTPUT_DIR=%s/camb/ CLUSTER_SAFE=%d" %
+        subprocess.call("make Debug python PYCAMB_OUTPUT_DIR=%s/camb/ > build.log 2>&1 CLUSTER_SAFE=%d" %
                         (pycamb_path, int(cluster if not os.getenv("GITHUB_ACTIONS") else 1)), shell=True)
+        print("DEBUG on")
         subprocess.call("chmod 755 %s" % lib_file, shell=True)
 
     if not os.path.isfile(os.path.join(pycamb_path, 'camb', DLLNAME)):

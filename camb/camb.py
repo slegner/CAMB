@@ -317,10 +317,11 @@ def read_ini(ini_filename, no_validate=False):
         read_inifile.argtypes = [POINTER(CAMBparams), ctypes.c_char_p, POINTER(ctypes.c_long)]
         read_inifile.restype = ctypes.c_bool
         s = ctypes.create_string_buffer(ini_filename.encode("latin-1"))
-        if not read_inifile(cp, s, ctypes.c_long(len(ini_filename))):
+        if not read_inifile(cp, s.value, ctypes.c_long(len(ini_filename))):
             config.check_global_error('read_ini')
     finally:
         if data:
+            print(data)
             os.unlink(ini_filename)
     return cp
 

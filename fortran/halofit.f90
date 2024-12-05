@@ -48,6 +48,7 @@
     module NonLinear
     use results
     use DarkEnergyInterface
+    use DarkEnergyPressure
     use classes
     use Transfer
     use constants
@@ -105,7 +106,7 @@
 
     TYPE HM_cosmology
         !Contains only things that do not need to be recalculated with each new z
-        REAL(dl) :: om_m, om_c, om_b, om_nu, om_v, w, wa, f_nu, ns, h, Tcmb, Nnu
+        REAL(dl) :: om_m, om_c, om_b, om_nu, om_v, w, wa, f_nu, ns, h, Tcmb, Nnu, P
         REAL(dl), ALLOCATABLE :: log_r_sigma(:), log_sigma(:)
         REAL(dl), ALLOCATABLE :: a_growth(:), growth(:), agrow(:)
         REAL(dl), ALLOCATABLE :: log_k_plin(:), log_plin(:), log_plinc(:)

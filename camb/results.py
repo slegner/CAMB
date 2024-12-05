@@ -211,7 +211,7 @@ class CAMBdata(F2003Class):
                  ('sound_horizon_zArr', [numpy_1d, numpy_1d, int_arg]),
                  ('RedshiftAtTimeArr', [numpy_1d, numpy_1d, int_arg]),
                  ('CosmomcTheta', [], c_double),
-                 ('DarkEnergyStressEnergy', [numpy_1d, numpy_1d, numpy_1d, int_arg]),
+                 ('DarkEnergyStressEnergy', [numpy_1d, numpy_1d, numpy_1d, numpy_1d, int_arg]),
                  ('get_lmax_lensed', [], c_int),
                  ('get_zstar', [d_arg], c_double),
                  ('SetParams', [POINTER(CAMBparams), int_arg, int_arg, int_arg, int_arg])
@@ -316,7 +316,6 @@ class CAMBdata(F2003Class):
         if CAMBdata_gettransfers(byref(self), byref(params), byref(c_int(1 if only_transfers else 0)),
                                  byref(c_int(1 if only_time_sources else 0))):
             config.check_global_error('calc_transfer')
-
     def _check_powers(self, params=None):
         if params is None:
             params = self.Params
@@ -447,6 +446,7 @@ class CAMBdata(F2003Class):
         P = {}
         if params is not None:
             self.calc_power_spectra(params)
+            print(self.calc_power_spectra(params))
         lmax = self._lmax_setting(lmax)
         for spectrum in spectra:
             P[spectrum] = getattr(self, 'get_' + spectrum + '_cls')(lmax, CMB_unit=CMB_unit,
@@ -669,11 +669,12 @@ class CAMBdata(F2003Class):
             scales = np.ascontiguousarray(a)
         rho = np.zeros(scales.shape)
         w = np.zeros(scales.shape)
-        self.f_DarkEnergyStressEnergy(scales, rho, w, byref(c_int(len(scales))))
+        P = np.zeros(scales.shape)
+        self.f_DarkEnergyStressEnergy(scales, rho, w, P, byref(c_int(len(scales))))
         if np.isscalar(a):
-            return rho[0], w[0]
+            return rho[0], w[0], P[0]
         else:
-            return rho, w
+            return rho, w, P
 
     def get_Omega(self, var, z=0):
         r"""
@@ -1592,7 +1593,7 @@ class CAMBdata(F2003Class):
 
     def sound_horizon(self, z):
         """
-        Get comoving sound horizon as function of redshift in Megaparsecs, the integral of the sound speed
+        Get comoving sound horizon as function of redshift in Megaparsees, the integral of the sound speed
         up to given redshift.
 
         :param z: redshift or array of redshifts

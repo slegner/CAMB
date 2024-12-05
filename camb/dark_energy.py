@@ -9,6 +9,8 @@ class DarkEnergyModel(F2003Class):
     """
     _fields_ = [
         ("__is_cosmological_constant", c_bool),
+        ("__is_no_mod_w", c_bool),
+        ("__is_no_mod_P", c_bool),
         ("__num_perturb_equations", c_int)]
 
     def validate_params(self):
@@ -72,7 +74,7 @@ class DarkEnergyEqnOfState(DarkEnergyModel):
 
         a = np.ascontiguousarray(a, dtype=np.float64)
         w = np.ascontiguousarray(w, dtype=np.float64)
-
+        
         self.f_SetWTable(a, w, byref(c_int(len(a))))
         return self
 
@@ -81,6 +83,86 @@ class DarkEnergyEqnOfState(DarkEnergyModel):
             raise TypeError("Cannot save class with splines")
         return super().__getstate__()
 
+class DarkEnergyPressure(DarkEnergyModel):
+    """
+    Class implementing the parameterization of the dark energy pressure as a function of scale factor.
+    """
+    _fortran_class_module_ = 'DarkEnergyPressure'
+    _fortran_class_name_ = 'TDarkEnergyDensityAndPressure'
+
+    _fields_ = [
+        ("P", c_double, "P(0)"),
+        ("rho", c_double, "rho(0)"),
+        ("cs2", c_double, "fluid rest-frame sound speed squared"),
+        ("__no_perturbations", c_bool, "turn off perturbations (unphysical, so hidden in Python)")   
+    ]
+
+    _methods_ = [
+        ('SetPTable', [numpy_1d, numpy_1d, POINTER(c_int)]),
+        ('SetrhoTable', [numpy_1d, numpy_1d, POINTER(c_int)])
+    ] 
+    def set_params(self, P=-1.0, rho=0.0, cs2=1.0):
+        """
+        Set the parameters so that P(a)/rho(a) = w(a) = w + (1-a)*wa
+
+        :param P: P(0)
+        :param rho: rho(0)
+        :param cs2: fluid rest-frame sound speed squared
+        """
+        self.P = P
+        self.rho = rho
+        self.cs2 = cs2
+        self.validate_params()
+
+    def validate_params(self):
+        if self.P > self.rho:
+            raise CAMBError('dark energy model has P > rho')
+
+    def set_P_a_table(self, a, P):
+        """
+        Set P(a) from numerical values (used as cubic spline). Note this is quite slow.
+
+        :param a: array of scale factors
+        :param P: array of P(a)
+        :return: self
+        """
+        if len(a) != len(P):
+            raise ValueError('Dark energy P(a) table non-equal sized arrays')
+        if not np.isclose(a[-1], 1):
+            raise ValueError('Dark energy P(a) arrays must end at a=1')
+        if np.any(a <= 0):
+            raise ValueError('Dark energy P(a) table cannot be set for a<=0')
+
+        a = np.ascontiguousarray(a, dtype=np.float64)
+        P = np.ascontiguousarray(P, dtype=np.float64)
+
+        self.f_SetPTable(a, P, byref(c_int(len(a))))
+        return self
+
+    def set_rho_a_table(self, a, rho):
+        """
+        Set rho(a) from numerical values (used as cubic spline). Note this is quite slow.
+
+        :param a: array of scale factors
+        :param rho: array of rho(a)
+        :return: self
+        """
+        if len(a) != len(rho):
+            raise ValueError('Dark energy rho(a) table non-equal sized arrays')
+        if not np.isclose(a[-1], 1):
+            raise ValueError('Dark energy rho(a) arrays must end at a=1')
+        if np.any(a <= 0):
+            raise ValueError('Dark energy rho(a) table cannot be set for a<=0')
+
+        a = np.ascontiguousarray(a, dtype=np.float64)
+        rho = np.ascontiguousarray(rho, dtype=np.float64)
+
+        self.f_SetrhoTable(a, rho, byref(c_int(len(a))))
+        return self
+
+    def __getstate__(self):
+        raise TypeError("Cannot save class with splines")
+        return super().__getstate__()
 
 @fortran_class
 class DarkEnergyFluid(DarkEnergyEqnOfState):
@@ -118,6 +200,14 @@ class DarkEnergyPPF(DarkEnergyEqnOfState):
     _fortran_class_module_ = 'DarkEnergyPPF'
     _fortran_class_name_ = 'TDarkEnergyPPF'
 
+@fortran_class
+class DarkEnergyPressurePPF(DarkEnergyPressure):
+    """
+    Class implementing the dark energy pressure parameterization in the PPF perturbation approximation
+    """
+
+    _fortran_class_module_ = 'DarkEnergyPressurePPF'
+    _fortran_class_name_ = 'TDarkEnergyPressurePPF'
 
 @fortran_class
 class AxionEffectiveFluid(DarkEnergyModel):
@@ -218,4 +308,4 @@ class EarlyQuintessence(Quintessence):
 
 
 # short names for models that support w/wa
-F2003Class._class_names.update({'fluid': DarkEnergyFluid, 'ppf': DarkEnergyPPF})
+F2003Class._class_names.update({'fluid': DarkEnergyFluid, 'ppf': DarkEnergyPPF, 'pressureppf': DarkEnergyPressurePPF})

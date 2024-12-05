@@ -8,7 +8,7 @@ from . import recombination as recomb
 from . import constants
 from .initialpower import InitialPower, SplinedInitialPower
 from .nonlinear import NonLinearModel
-from .dark_energy import DarkEnergyModel, DarkEnergyEqnOfState
+from .dark_energy import DarkEnergyModel, DarkEnergyEqnOfState, DarkEnergyPressure
 from .recombination import RecombinationModel
 from .reionization import ReionizationModel
 from .sources import SourceWindow
@@ -606,7 +606,7 @@ class CAMBparams(F2003Class):
         if reionization_model:
             self.Reion = self.make_class_named(reionization_model, ReionizationModel)
 
-    def set_dark_energy(self, w=-1.0, cs2=1.0, wa=0, dark_energy_model='fluid'):
+    def set_dark_energy(self, w=-1.0, cs2=1.0, wa=0, dark_energy_model='ppf'):
         r"""
         Set dark energy parameters (use set_dark_energy_w_a to set w(a) from numerical table instead)
         To use a custom dark energy model, assign the class instance to the DarkEnergy field instead.
@@ -623,7 +623,7 @@ class CAMBparams(F2003Class):
         self.DarkEnergy = de
         return self
 
-    def set_dark_energy_w_a(self, a, w, dark_energy_model='fluid'):
+    def set_dark_energy_w_a(self, a, w, dark_energy_model='ppf'):
         """
         Set the dark energy equation of state from tabulated values (which are cubic spline interpolated).
 
@@ -638,6 +638,22 @@ class CAMBparams(F2003Class):
         # Note that assigning to allocatable fields makes deep copies of the object
         self.DarkEnergy.set_w_a_table(a, w)
         return self
+
+    def set_dark_energy_rho_p_a(self, a_rho, rho, a_p, p, dark_energy_model='pressureppf'):
+        """
+        Set the dark energy density and pressure from tabulated values (which are cubic spline interpolated).
+
+        :param a: array of sampled a = 1/(1+z) values
+        :param rho: array of rho(a)
+        :param p: array of p(a)
+        :return: self
+        """
+
+        self.DarkEnergy = self.make_class_named(dark_energy_model, DarkEnergyPressure)
+        self.DarkEnergy.set_P_a_table(a_p, p)
+        self.DarkEnergy.set_rho_a_table(a_rho, rho)
+        return self
+
 
     def get_zre(self):
         return self.Reion.get_zre(self)

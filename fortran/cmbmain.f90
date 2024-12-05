@@ -63,6 +63,7 @@
     use RangeUtils
     use constants
     use DarkEnergyInterface
+    use DarkEnergyPressure
     use MathUtils
     implicit none
     private
@@ -979,7 +980,6 @@
     y=0
     call initial(EV,y, taustart)
     if (global_error_flag/=0) return
-
     tau=taustart
     ind=1
 

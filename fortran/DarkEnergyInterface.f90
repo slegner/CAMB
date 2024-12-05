@@ -8,6 +8,8 @@
 
     type, extends(TCambComponent) :: TDarkEnergyModel
         logical :: is_cosmological_constant = .true.
+        logical :: is_no_mod_w = .true.
+        logical :: is_no_mod_P = .true.
         integer :: num_perturb_equations = 0
     contains
     procedure :: Init
@@ -19,6 +21,7 @@
     procedure :: PrintFeedback
     ! do not have to implement w_de or grho_de if BackgroundDensityAndPressure is inherited directly
     procedure :: w_de
+    procedure :: P_de
     procedure :: grho_de
     procedure :: Effective_w_wa !Used as approximate values for non-linear corrections
     end type TDarkEnergyModel
@@ -63,6 +66,15 @@
 
     end function grho_de
 
+    function P_de(this, a)  !pressure of the PPF DE
+    class(TDarkEnergyModel) :: this
+    real(dl) :: P_de, al
+    real(dl), intent(IN) :: a
+
+    P_de = -1_dl
+
+    end function P_de
+
     subroutine PrintFeedback(this, FeedbackLevel)
     class(TDarkEnergyModel) :: this
     integer, intent(in) :: FeedbackLevel
@@ -77,16 +89,19 @@
 
     end subroutine Init
 
-    subroutine BackgroundDensityAndPressure(this, grhov, a, grhov_t, w)
+    subroutine BackgroundDensityAndPressure(this, grhov, a, grhov_t, w, P)
     !Get grhov_t = 8*pi*rho_de*a**2 and (optionally) equation of state at scale factor a
+    use constants, only : kappa, c
+    use, intrinsic :: ieee_arithmetic
     class(TDarkEnergyModel), intent(inout) :: this
     real(dl), intent(in) :: grhov, a
     real(dl), intent(out) :: grhov_t
-    real(dl), optional, intent(out) :: w
+    real(dl), optional, intent(out) :: w, P
 
     if (this%is_cosmological_constant) then
         grhov_t = grhov * a * a
-        if (present(w)) w = -1_dl
+        if (present(P)) P = -1._dl
+        if (present(w)) w = -1._dl
     else
         ! Ensure a valid result
         if (a > 1e-10) then
@@ -94,7 +109,18 @@
         else
             grhov_t = 0._dl
         end if
-        if (present(w)) w = this%w_de(a)
+        if (.not. this%is_no_mod_w) then
+            if (present(w)) then
+                w = this%w_de(a)
+                P = w * grhov_t/(grhov * a * a)
+            end if
+        end if
+        if (.not. this%is_no_mod_P) then
+            if (present(P)) then
+                P = this%P_de(a)
+                w = P / (grhov_t /(grhov * a * a)) 
+            end if
+        end if 
     end if
 
     end subroutine BackgroundDensityAndPressure
@@ -110,10 +136,10 @@
 
 
     subroutine PerturbedStressEnergy(this, dgrhoe, dgqe, &
-        a, dgq, dgrho, grho, grhov_t, w, gpres_noDE, etak, adotoa, k, kf1, ay, ayprime, w_ix)
+        a, dgq, dgrho, grho, grhov_t, w, Pgrhova2, gpres_noDE, etak, adotoa, k, kf1, ay, ayprime, w_ix)
     class(TDarkEnergyModel), intent(inout) :: this
     real(dl), intent(out) :: dgrhoe, dgqe
-    real(dl), intent(in) ::  a, dgq, dgrho, grho, grhov_t, w, gpres_noDE, etak, adotoa, k, kf1
+    real(dl), intent(in) ::  a, dgq, dgrho, grho, grhov_t, w, Pgrhova2, gpres_noDE, etak, adotoa, k, kf1
     real(dl), intent(in) :: ay(*)
     real(dl), intent(inout) :: ayprime(*)
     integer, intent(in) :: w_ix
@@ -124,10 +150,10 @@
     end subroutine PerturbedStressEnergy
 
 
-    function diff_rhopi_Add_Term(this, dgrhoe, dgqe,grho, gpres, w, grhok, adotoa, &
+    function diff_rhopi_Add_Term(this, dgrhoe, dgqe,grho, gpres, w, Pgrhova2, grhok, adotoa, &
         Kf1, k, grhov_t, z, k2, yprime, y, w_ix) result(ppiedot)
     class(TDarkEnergyModel), intent(in) :: this
-    real(dl), intent(in) :: dgrhoe, dgqe, grho, gpres, grhok, w, adotoa, &
+    real(dl), intent(in) :: dgrhoe, dgqe, grho, gpres, grhok, w, Pgrhova2, adotoa, &
         k, grhov_t, z, k2, yprime(:), y(:), Kf1
     integer, intent(in) :: w_ix
     real(dl) :: ppiedot
@@ -138,10 +164,10 @@
 
     end function diff_rhopi_Add_Term
 
-    subroutine PerturbationEvolve(this, ayprime, w, w_ix, a, adotoa, k, z, y)
+    subroutine PerturbationEvolve(this, ayprime, w, Pgrhova2, w_ix, a, adotoa, k, z, y)
     class(TDarkEnergyModel), intent(in) :: this
     real(dl), intent(inout) :: ayprime(:)
-    real(dl), intent(in) :: a,adotoa, k, z, y(:), w
+    real(dl), intent(in) :: a,adotoa, k, z, y(:), w, Pgrhova2
     integer, intent(in) :: w_ix
     end subroutine PerturbationEvolve
 
@@ -162,7 +188,6 @@
     integer, intent(in) :: n
     real(dl), intent(in) :: a(n), w(n)
     real(dl), allocatable :: integral(:)
-
     if (abs(a(size(a)) -1) > 1e-5) error stop 'w table must end at a=1'
 
     this%use_tabulated_w = .true.
@@ -208,6 +233,7 @@
 
     w = this%w_lam
     wa = this%wa
+    print *, 'Effective w, wa', w, wa
 
     end subroutine TDarkEnergyEqnOfState_Effective_w_wa
 
@@ -268,7 +294,6 @@
         call File%LoadTxt(Ini%Read_String('wafile'), table)
         call this%SetwTable(table(:,1),table(:,2), size(table(:,1)))
     endif
-
     end subroutine TDarkEnergyEqnOfState_ReadParams
 
 
@@ -278,6 +303,8 @@
     class(TCAMBdata), intent(in), target :: State
 
     this%is_cosmological_constant = .not. this%use_tabulated_w .and. &
+        &  abs(this%w_lam + 1._dl) < 1.e-6_dl .and. this%wa==0._dl
+    this%is_no_mod_w = .not. this%use_tabulated_w .and. &
         &  abs(this%w_lam + 1._dl) < 1.e-6_dl .and. this%wa==0._dl
 
     end subroutine TDarkEnergyEqnOfState_Init

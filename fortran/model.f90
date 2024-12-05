@@ -4,6 +4,7 @@
     use SourceWindows
     use constants, only : COBE_CMBTemp, default_nnu
     use DarkEnergyInterface
+    use DarkEnergyPressure
     use MassiveNu
     use config
     use iso_c_binding
