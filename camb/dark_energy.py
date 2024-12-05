@@ -184,7 +184,7 @@ class DarkEnergyFluid(DarkEnergyEqnOfState):
     def set_w_a_table(self, a, w):
         # check w array has elements that do not cross -1
         if np.sign(1 + np.max(w)) - np.sign(1 + np.min(w)) == 2:
-            raise ValueError('fluid dark energy model does not support w crossing -1')
+            raise CAMBError('fluid dark energy model does not support w crossing -1')
         super().set_w_a_table(a, w)
 
 
@@ -194,6 +194,9 @@ class DarkEnergyPPF(DarkEnergyEqnOfState):
     Class implementing the w, wa or splined w(a) parameterization in the PPF perturbation approximation
     (`arXiv:0808.3125 <https://arxiv.org/abs/0808.3125>`_)
     Use inherited methods to set parameters or interpolation table.
+
+    Note PPF is not a physical model and just designed to allow crossing -1 in an ad hoc smooth way. For models
+    with w>-1 but far from cosmological constant, it can give quite different answers to the fluid model with c_s^2=1.
 
     """
     # cannot declare c_Gamma_ppf directly here as have not defined all fields in DarkEnergyEqnOfState (TCubicSpline)
