@@ -20,6 +20,7 @@
     procedure :: PrintFeedback => TDarkEnergyDensityAndPressure_PrintFeedback
     procedure :: grho_de => TDarkEnergyDensityAndPressure_grho_de
     procedure :: P_de => TDarkEnergyDensityAndPressure_P_de
+    procedure :: Effective_w_wa => TDarkEnergyDensityAndPressure_Effective_w_wa
     end type TDarkEnergyDensityAndPressure
 
     public TDarkEnergyDensityAndPressure
@@ -113,6 +114,13 @@
     endif
     end function TDarkEnergyDensityAndPressure_grho_de  ! pressure of the PPF DE
 
+    subroutine TDarkEnergyDensityAndPressure_Effective_w_wa(this, w, wa)
+    class(TDarkEnergyDensityAndPressure), intent(inout) :: this
+    real(dl), intent(out) :: w, wa
+    w = this%P_lam/this%rho_lam
+    wa = - (this%pressure%Derivative(0._dl)*this%rho_lam - this%density%Derivative(0._dl)*this%P_lam)/(this%rho_lam**2)
+    print *, w, wa
+    end subroutine TDarkEnergyDensityAndPressure_Effective_w_wa
 
    ! function TDarkEnergyDensityAndPressure_w_de(this, a) result(w_de)
    ! class(TDarkEnergyDensityAndPressure) :: this

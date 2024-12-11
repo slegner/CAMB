@@ -210,7 +210,7 @@
     type(EvolutionVars) EV
     real(dl) c(24),w(EV%nvar,9), y(EV%nvar), tol1, tau, tauend
     integer ind
-    
+
     call dverk(EV,EV%ScalEqsToPropagate,derivs,tau,y,tauend,tol1,ind,c,EV%nvar,w)
     if (ind==-3) then
         call GlobalError('Dverk error -3: the subroutine was unable  to  satisfy  the  error ' &
@@ -2196,7 +2196,7 @@
     a2=a*a
 
     etak=ay(ix_etak)
-    
+
     !  CDM variables
     clxc=ay(ix_clxc)
 
@@ -2359,7 +2359,7 @@
 
     if (EV%TightCoupling) then
         !  ddota/a
-        gpres = gpres_noDE + w_dark_energy_t*grhov_t 
+        gpres = gpres_noDE + Pgrhova2
         adotdota=(adotoa*adotoa-gpres)/2
 
         pig = 32._dl/45/opacity*k*(sigma+vb)
@@ -2694,7 +2694,7 @@
             call MassiveNuVarsOut(EV,ay,ayprime,a, adotoa, dgpi=dgpi, clxnu_all=clxnu, &
                 dgpi_diff=dgpi_diff, pidot_sum=pidot_sum)
         end if
-        gpres = gpres_noDE + w_dark_energy_t*grhov_t 
+        gpres = gpres_noDE + Pgrhova2
         diff_rhopi = pidot_sum - (4*dgpi+ dgpi_diff)*adotoa + &
             State%CP%DarkEnergy%diff_rhopi_Add_Term(dgrho_de, dgq_de, grho, &
             gpres, w_dark_energy_t, Pgrhova2, State%grhok, adotoa, &
@@ -2881,7 +2881,7 @@
     call CP%DarkEnergy%BackgroundDensityAndPressure(State%grhov, a, grhov_t, w_dark_energy_t, P_dark_energy_t)
 
     grho=grhob_t+grhoc_t+grhor_t+grhog_t+grhov_t
-    gpres=(grhog_t+grhor_t)/3._dl+ w_dark_energy_t*grhov_t 
+    gpres=(grhog_t+grhor_t)/3._dl+ Pgrhova2
 
     adotoa=sqrt(grho/3._dl)
     adotdota=(adotoa*adotoa-gpres)/2
