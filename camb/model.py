@@ -606,7 +606,7 @@ class CAMBparams(F2003Class):
         if reionization_model:
             self.Reion = self.make_class_named(reionization_model, ReionizationModel)
 
-    def set_dark_energy(self, w=-1.0, cs2=1.0, wa=0, dark_energy_model='ppf'):
+    def set_dark_energy(self, w=-1.0, cs2=1.0, wa=0, dark_energy_model='fluid'):
         r"""
         Set dark energy parameters (use set_dark_energy_w_a to set w(a) from numerical table instead)
         To use a custom dark energy model, assign the class instance to the DarkEnergy field instead.
@@ -623,7 +623,7 @@ class CAMBparams(F2003Class):
         self.DarkEnergy = de
         return self
 
-    def set_dark_energy_w_a(self, a, w, dark_energy_model='ppf'):
+    def set_dark_energy_w_a(self, a, w, dark_energy_model='fluid'):
         """
         Set the dark energy equation of state from tabulated values (which are cubic spline interpolated).
 

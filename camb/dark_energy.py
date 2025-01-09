@@ -74,7 +74,7 @@ class DarkEnergyEqnOfState(DarkEnergyModel):
 
         a = np.ascontiguousarray(a, dtype=np.float64)
         w = np.ascontiguousarray(w, dtype=np.float64)
-        
+
         self.f_SetWTable(a, w, byref(c_int(len(a))))
         return self
 

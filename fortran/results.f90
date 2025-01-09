@@ -3024,7 +3024,7 @@
         this%Cl_tensor(CP%Min_l:CP%Max_l_tensor, CT_Temp:CT_Cross) =  &
             this%Cl_tensor(CP%Min_l:CP%Max_l_tensor, CT_Temp:CT_Cross) * Norm
     end if
-    
+
     end subroutine TCLdata_NormalizeClsAtL
 
     end module results
