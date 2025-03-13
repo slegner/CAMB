@@ -306,6 +306,14 @@
     next_switch = min(tau_switch_ktau, tau_switch_nu_massless,EV%TightSwitchoffTime, tau_switch_nu_massive, &
         tau_switch_no_nu_multpoles, tau_switch_no_phot_multpoles, tau_switch_nu_nonrel, noSwitch, &
         tau_switch_saha, tau_switch_evolve_TM)
+    if (tauend > max( &
+        tau_switch_ktau, tau_switch_nu_massless, EV%TightSwitchoffTime, tau_switch_nu_massive, &
+        tau_switch_no_nu_multpoles, tau_switch_no_phot_multpoles, tau_switch_nu_nonrel, noSwitch, &
+        tau_switch_saha, tau_switch_evolve_TM)) then
+        print *, "tauend larger than all switch error encountered"
+        call GlobalError('tauend larger than all switch', error_evolution)
+        return
+    end if
 
     if (next_switch < tauend) then
         if (next_switch > tau+smallTime) then
@@ -2805,7 +2813,6 @@
                     procedure(TSource_func), pointer :: custom_sources_func
 
                     call c_f_procpointer(CP%CustomSources%c_source_func,custom_sources_func)
-
                     call custom_sources_func(EV%CustomSources, tau, a, adotoa, grho, gpres,w_dark_energy_t, cs2_de, &
                         grhob_t,grhor_t,grhoc_t,grhog_t,grhov_t,grhonu_t, &
                         k, etak, ayprime(ix_etak), phi, phidot, sigma, sigmadot, &
