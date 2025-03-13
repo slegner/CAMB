@@ -47,7 +47,7 @@ w_de = Function('w_de', camb_var='w_lam', description='fluid dark energy equatio
 p_g = rho_g / 3
 p_r = rho_r / 3
 p_c = 0
-p_de = Function('p_de', camb_var='P_lam', description='dark energy pressure')(t)
+p_de = w_de * rho_de
 
 opacity = Function('opacity', description='opacity, a n_e sigma_t')(t)
 visibility = Function('visibility', description='ionization visibility')(t)
@@ -249,7 +249,7 @@ Delta_g = LinearPerturbation('Delta_g', species='g', camb_var='clxg', descriptio
                              frame_dependence=4 * H * delta_frame / k)
 Delta_de = LinearPerturbation('Delta_de', species='de', camb_var='clxde',
                               description='fractional dark energy density perturbation',
-                              frame_dependence=3 * H * (1 + p_de / rho_de) * delta_frame / k)
+                              frame_dependence=3 * H * (1 + w_de) * delta_frame / k)
 # Sound speeds
 csq_b = LinearPerturbation('c_sb^2', species='b', camb_var=['delta_p_b', 'clxb'], camb_sub='delta_p_b/clxb',
                            description='baryon sound speed')
@@ -450,7 +450,7 @@ density_eqs = [
     Eq(diff(rho_g, t), -4 * H * rho_g),
     Eq(diff(rho_r, t), -4 * H * rho_r),
     Eq(diff(rho_nu, t), -3 * H * (rho_nu + p_nu)),
-    Eq(diff(rho_de, t), -3 * H * (rho_de + p_de))
+    Eq(diff(rho_de, t), -3 * H * (rho_de * (1 + w_de)))
 ]
 
 delta_eqs = [
@@ -462,7 +462,7 @@ delta_eqs = [
     Eq(diff(Delta_nu, t), -3 * (1 + p_nu / rho_nu) * hdot
        - k * q_nu + 3 * H * (-Delta_P_nu + Delta_nu * p_nu / rho_nu)),
     Eq(diff(Delta_de, t),
-       -3 * (1 + p_de / rho_de) * hdot - (1 + w_de) * k * v_de - 3 * H * (csqhat_de - w_de) * (
+       -3 * (1 + w_de) * hdot - (1 + w_de) * k * v_de - 3 * H * (csqhat_de - w_de) * (
                Delta_de + 3 * H * (1 + w_de) * v_de / k)
        - 3 * H * diff(w_de, t) * v_de / k)
 ]
@@ -481,7 +481,7 @@ vel_eqs = [
 component_eqs = density_eqs + delta_eqs + vel_eqs
 
 rho_t = rho_b + rho_c + rho_r + rho_g + rho_nu + rho_de
-P_t = third * (rho_r + rho_g) + p_b + p_nu + p_de
+P_t = third * (rho_r + rho_g) + p_b + p_nu + w_de * rho_de
 tot_subs = [
     Eq(rho, rho_t),
     Eq(P, P_t)
@@ -495,7 +495,7 @@ tot_pert_subs = [
     Eq(Pi, rho_g * pi_g + rho_r * pi_r + rho_nu * pi_nu),
     Eq(delta, rho_g * Delta_g + rho_r * Delta_r + rho_b * Delta_b + rho_c * Delta_c
        + rho_nu * Delta_nu + rho_de * Delta_de),
-    Eq(q, rho_g * q_g + rho_r * q_r + rho_c * v_c + (rho_b + p_b) * v_b + rho_nu * q_nu + (rho_de + p_de) * v_de),
+    Eq(q, rho_g * q_g + rho_r * q_r + rho_c * v_c + (rho_b + p_b) * v_b + rho_nu * q_nu + rho_de * (1 + w_de) * v_de),
     Eq(delta_P, rho_nu * Delta_P_nu + third * (rho_g * Delta_g + rho_r * Delta_r) + csq_b * Delta_b * rho_b
        + Delta_P_de * rho_de)
 
