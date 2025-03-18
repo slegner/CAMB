@@ -63,7 +63,7 @@
     integer, parameter :: halofit_mead=halofit_mead2016 ! AM Kept for backwards compatability
     integer, parameter :: halofit_default=halofit_mead2020
 
-    logical :: HM_verbose = .True.
+    logical :: HM_verbose = .false.
 
     type, extends(TNonLinearModel) :: THalofit
         integer :: halofit_version = halofit_default
