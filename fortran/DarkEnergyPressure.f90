@@ -100,12 +100,14 @@
             else
                 al_smaller = this%pressure%X(this%pressure%n) 
             endif
-            if(al <= al_larger) then
+            if(al < al_larger) then
                 w_rhop = this%pressure%Value(al_larger)/this%density%Value(al_larger)
+                !the exp(al_larger) **4 is required because the density can be seen as a_larger^-3(1+w) and you need an extra
+                !a_larger^4 to make it such that it fits with the other parts.
                 fint = this%density%F(1) * exp(al_larger) **4 *exp((1. - 3. * w_rhop) * (al - al_larger))
-            elseif(al >= al_smaller) then
+            elseif(al > al_smaller) then
                 w_rhop = this%pressure%Value(al_smaller)/this%density%Value(al_smaller)
-                fint = this%density%F(this%density%n) * exp(al_larger) **4 * exp((1. - 3. * w_rhop) * (al - al_smaller))
+                fint = this%density%F(this%density%n) * exp(al_smaller) **4 * exp((1. - 3. * w_rhop) * (al - al_smaller))
             else
                 fint = this%density%Value(al) * a ** 4._dl
             endif
@@ -119,7 +121,6 @@
     real(dl), intent(out) :: w, wa
     w = this%P_lam/this%rho_lam
     wa = - (this%pressure%Derivative(0._dl)*this%rho_lam - this%density%Derivative(0._dl)*this%P_lam)/(this%rho_lam**2)
-    print *, w, wa
     end subroutine TDarkEnergyDensityAndPressure_Effective_w_wa
 
    ! function TDarkEnergyDensityAndPressure_w_de(this, a) result(w_de)

@@ -306,6 +306,14 @@
     next_switch = min(tau_switch_ktau, tau_switch_nu_massless,EV%TightSwitchoffTime, tau_switch_nu_massive, &
         tau_switch_no_nu_multpoles, tau_switch_no_phot_multpoles, tau_switch_nu_nonrel, noSwitch, &
         tau_switch_saha, tau_switch_evolve_TM)
+    if (tauend > max( &
+        tau_switch_ktau, tau_switch_nu_massless, EV%TightSwitchoffTime, tau_switch_nu_massive, &
+        tau_switch_no_nu_multpoles, tau_switch_no_phot_multpoles, tau_switch_nu_nonrel, noSwitch, &
+        tau_switch_saha, tau_switch_evolve_TM)) then
+        print *, "tauend larger than all switch error encountered"
+        call GlobalError('tauend larger than all switch', error_evolution)
+        return
+    end if
 
     if (next_switch < tauend) then
         if (next_switch > tau+smallTime) then
@@ -2311,7 +2319,7 @@
     end if
 
     if (.not. EV%is_cosmological_constant) &
-        call State%CP%DarkEnergy%PerturbationEvolve(ayprime, w_dark_energy_t, P_dark_energy_t, &
+        call State%CP%DarkEnergy%PerturbationEvolve(ayprime, w_dark_energy_t, &
         EV%w_ix, a, adotoa, k, z, ay)
 
     !  CDM equation of motion

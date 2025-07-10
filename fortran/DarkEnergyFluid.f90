@@ -114,11 +114,11 @@
     end subroutine TDarkEnergyFluid_PerturbedStressEnergy
 
 
-    subroutine TDarkEnergyFluid_PerturbationEvolve(this, ayprime, w, Pgrhova2,  w_ix, &
+    subroutine TDarkEnergyFluid_PerturbationEvolve(this, ayprime, w, w_ix, &
         a, adotoa, k, z, y)
     class(TDarkEnergyFluid), intent(in) :: this
     real(dl), intent(inout) :: ayprime(:)
-    real(dl), intent(in) :: a, adotoa, w, Pgrhova2, k, z, y(:)
+    real(dl), intent(in) :: a, adotoa, w, k, z, y(:)
     integer, intent(in) :: w_ix
     real(dl) Hv3_over_k, loga
 
@@ -247,11 +247,11 @@
 
     end function TAxionEffectiveFluid_grho_de
 
-    subroutine TAxionEffectiveFluid_PerturbationEvolve(this, ayprime, w, Pgrhova2, w_ix, &
+    subroutine TAxionEffectiveFluid_PerturbationEvolve(this, ayprime, w, w_ix, &
         a, adotoa, k, z, y)
     class(TAxionEffectiveFluid), intent(in) :: this
     real(dl), intent(inout) :: ayprime(:)
-    real(dl), intent(in) :: a, adotoa, w, Pgrhova2, k, z, y(:)
+    real(dl), intent(in) :: a, adotoa, w, k, z, y(:)
     integer, intent(in) :: w_ix
     real(dl) Hv3_over_k, loga, deriv, apow, acpow, cs2, fac
 

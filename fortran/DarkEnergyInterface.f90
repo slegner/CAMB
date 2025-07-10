@@ -164,10 +164,10 @@
 
     end function diff_rhopi_Add_Term
 
-    subroutine PerturbationEvolve(this, ayprime, w, Pgrhova2, w_ix, a, adotoa, k, z, y)
+    subroutine PerturbationEvolve(this, ayprime, w, w_ix, a, adotoa, k, z, y)
     class(TDarkEnergyModel), intent(in) :: this
     real(dl), intent(inout) :: ayprime(:)
-    real(dl), intent(in) :: a,adotoa, k, z, y(:), w, Pgrhova2
+    real(dl), intent(in) :: a,adotoa, k, z, y(:), w
     integer, intent(in) :: w_ix
     end subroutine PerturbationEvolve
 

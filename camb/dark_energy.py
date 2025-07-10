@@ -83,6 +83,7 @@ class DarkEnergyEqnOfState(DarkEnergyModel):
             raise TypeError("Cannot save class with splines")
         return super().__getstate__()
 
+
 class DarkEnergyPressure(DarkEnergyModel):
     """
     Class implementing the parameterization of the dark energy pressure as a function of scale factor.
@@ -94,13 +95,14 @@ class DarkEnergyPressure(DarkEnergyModel):
         ("P", c_double, "P(0)"),
         ("rho", c_double, "rho(0)"),
         ("cs2", c_double, "fluid rest-frame sound speed squared"),
-        ("__no_perturbations", c_bool, "turn off perturbations (unphysical, so hidden in Python)")   
+        ("__no_perturbations", c_bool, "turn off perturbations (unphysical, so hidden in Python)")
     ]
 
     _methods_ = [
         ('SetPTable', [numpy_1d, numpy_1d, POINTER(c_int)]),
         ('SetrhoTable', [numpy_1d, numpy_1d, POINTER(c_int)])
-    ] 
+    ]
+
     def set_params(self, P=-1.0, rho=0.0, cs2=1.0):
         """
         Set the parameters so that P(a)/rho(a) = w(a) = w + (1-a)*wa
@@ -164,6 +166,7 @@ class DarkEnergyPressure(DarkEnergyModel):
         raise TypeError("Cannot save class with splines")
         return super().__getstate__()
 
+
 @fortran_class
 class DarkEnergyFluid(DarkEnergyEqnOfState):
     """
@@ -184,7 +187,7 @@ class DarkEnergyFluid(DarkEnergyEqnOfState):
     def set_w_a_table(self, a, w):
         # check w array has elements that do not cross -1
         if np.sign(1 + np.max(w)) - np.sign(1 + np.min(w)) == 2:
-            raise ValueError('fluid dark energy model does not support w crossing -1')
+            raise CAMBError('fluid dark energy model does not support w crossing -1')
         super().set_w_a_table(a, w)
 
 
@@ -195,10 +198,14 @@ class DarkEnergyPPF(DarkEnergyEqnOfState):
     (`arXiv:0808.3125 <https://arxiv.org/abs/0808.3125>`_)
     Use inherited methods to set parameters or interpolation table.
 
+    Note PPF is not a physical model and just designed to allow crossing -1 in an ad hoc smooth way. For models
+    with w>-1 but far from cosmological constant, it can give quite different answers to the fluid model with c_s^2=1.
+
     """
     # cannot declare c_Gamma_ppf directly here as have not defined all fields in DarkEnergyEqnOfState (TCubicSpline)
     _fortran_class_module_ = 'DarkEnergyPPF'
     _fortran_class_name_ = 'TDarkEnergyPPF'
+
 
 @fortran_class
 class DarkEnergyPressurePPF(DarkEnergyPressure):
@@ -208,6 +215,7 @@ class DarkEnergyPressurePPF(DarkEnergyPressure):
 
     _fortran_class_module_ = 'DarkEnergyPressurePPF'
     _fortran_class_name_ = 'TDarkEnergyPressurePPF'
+
 
 @fortran_class
 class AxionEffectiveFluid(DarkEnergyModel):
