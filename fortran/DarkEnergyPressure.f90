@@ -121,7 +121,6 @@
     real(dl), intent(out) :: w, wa
     w = this%P_lam/this%rho_lam
     wa = - (this%pressure%Derivative(0._dl)*this%rho_lam - this%density%Derivative(0._dl)*this%P_lam)/(this%rho_lam**2)
-    print *, w, wa
     end subroutine TDarkEnergyDensityAndPressure_Effective_w_wa
 
    ! function TDarkEnergyDensityAndPressure_w_de(this, a) result(w_de)
