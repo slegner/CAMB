@@ -43,7 +43,7 @@
     real(dl), intent(in) :: a(n), P(n)
 
     if (abs(a(size(a)) -1) > 1e-5) error stop 'P table must end at a=1'
-    
+
     call this%pressure%Init(log(a), P)
 
     this%P_lam = P(size(a))
@@ -55,7 +55,7 @@
     class(TDarkEnergyDensityAndPressure) :: this
     real(dl) :: P_de, al, al_larger, al_smaller, w_rhop
     real(dl), intent(IN) :: a
-    
+
     al=dlog(a)
     if(this%density%X(1) > this%pressure%X(1)) then
         al_larger = this%density%X(1)
@@ -65,7 +65,7 @@
     if(this%density%X(this%density%n) < this%pressure%X(this%pressure%n)) then
         al_smaller = this%density%X(this%density%n)
     else
-        al_smaller = this%pressure%X(this%pressure%n) 
+        al_smaller = this%pressure%X(this%pressure%n)
     endif
     if(al <= al_larger) then
         w_rhop = this%pressure%Value(al_larger)/this%density%Value(al_larger)
@@ -82,7 +82,7 @@
     class(TDarkEnergyDensityAndPressure) :: this
     real(dl) :: grho_de, al, w_rhop, al_larger, al_smaller, fint
     real(dl), intent(IN) :: a
-    
+
     if(a == 0.d0) then
         grho_de = 0.d0
     else
@@ -98,7 +98,7 @@
             if(this%density%X(this%density%n) < this%pressure%X(this%pressure%n)) then
                 al_smaller = this%density%X(this%density%n)
             else
-                al_smaller = this%pressure%X(this%pressure%n) 
+                al_smaller = this%pressure%X(this%pressure%n)
             endif
             if(al < al_larger) then
                 w_rhop = this%pressure%Value(al_larger)/this%density%Value(al_larger)
@@ -131,8 +131,8 @@
    ! al = dlog(a)
    ! if(al <= this%density%Xmin_interp) then
    !     fint = this%density%F(1)
-    
-    
+
+
     subroutine TDarkEnergyDensityAndPressure_PrintFeedback(this, FeedbackLevel)
     class(TDarkEnergyDensityAndPressure) :: this
     integer, intent(in) :: FeedbackLevel
@@ -145,12 +145,12 @@
     class(TDarkEnergyDensityAndPressure) :: this
     class(TIniFile), intent(in) :: Ini
     real(dl), allocatable :: table(:,:)
-    
+
     call File%LoadTxt(Ini%Read_String('rhoafile'), table)
     call this%SetrhoTable(table(:,1),table(:,2), size(table(:,1)))
 
     call File%LoadTxt(Ini%Read_String('Pafile'), table)
-    
+
     call this%SetPTable(table(:,1),table(:,2), size(table(:,1)))
 
     end subroutine TDarkEnergyDensityAndPressure_ReadParams

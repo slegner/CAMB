@@ -2,7 +2,7 @@
     use DarkEnergyPressure
     use classes
     implicit none
-    
+
     private
 
     type, extends(TDarkEnergyDensityAndPressure) :: TDarkEnergyPressurePPF
@@ -34,7 +34,7 @@
 
     function TDarkEnergyPressurePPF_PythonClass()
     character(LEN=:), allocatable :: TDarkEnergyPressurePPF_PythonClass
-    
+
     TDarkEnergyPressurePPF_PythonClass = 'DarkEnergyPressurePPF'
 
     end function TDarkEnergyPressurePPF_PythonClass
@@ -63,14 +63,14 @@
     end if
     if (this%cs2_lam /= 1._dl) &
         call GlobalError('DarkEnergyPressurePPF does not support varying sound speed',error_unsupported_params)
-    
+
     end subroutine TDarkEnergyPressurePPF_Init
 
     subroutine setcgammappf(this)
     class(TDarkEnergyPressurePPF) :: this
 
     this%c_Gamma_ppf =  0.4_dl * sqrt(this%cs2_lam)
-   
+
     end subroutine setcgammappf
 
     function TDarkEnergyPressurePPF_diff_rhopi_Add_Term(this, dgrhoe, dgqe, grho, gpres, w, Pgrhova2, grhok, adotoa, &
@@ -80,7 +80,7 @@
         k, grhov_t, z, k2, yprime(:), y(:), Kf1
     integer, intent(in) :: w_ix
     real(dl) :: ppiedot, hdotoh
-    
+
     if (this%is_cosmological_constant .or. this%no_perturbations) then
         ppiedot = 0
     else
@@ -91,7 +91,7 @@
             (yprime(w_ix) / adotoa - 2._dl * y(w_ix))
         ppiedot = ppiedot * adotoa / Kf1
     end if
-    
+
     end function TDarkEnergyPressurePPF_diff_rhopi_Add_Term
 
     subroutine TDarkEnergyPressurePPF_PerturbedStressEnergy(this, dgrhoe, dgqe, &
@@ -114,7 +114,7 @@
     vT = dgq / (grhoT + gpres_noDE)
     Gamma = ay(w_ix)
 
-    sigma = (etak + (dgrho + 3 * adotoa / k * dgq) / 2._dl / k) / kf1 - & 
+    sigma = (etak + (dgrho + 3 * adotoa / k * dgq) / 2._dl / k) / kf1 - &
         k * Gamma
     sigma = sigma / adotoa
 

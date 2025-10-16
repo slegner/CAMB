@@ -181,9 +181,13 @@ def make_library(cluster=False):
             )
         get_forutils()
         print("Compiling source...")
-        subprocess.call("make python PYCAMB_OUTPUT_DIR=%s/camb/ CLUSTER_SAFE=%d" %
-        #subprocess.call("make Debug python PYCAMB_OUTPUT_DIR=%s/camb/ > build.log 2>&1 CLUSTER_SAFE=%d" %
-                        (pycamb_path, int(cluster if not os.getenv("GITHUB_ACTIONS") else 1)), shell=True)
+        subprocess.call(
+            "make python PYCAMB_OUTPUT_DIR=%s/camb/ CLUSTER_SAFE=%d"
+            %
+            # subprocess.call("make Debug python PYCAMB_OUTPUT_DIR=%s/camb/ > build.log 2>&1 CLUSTER_SAFE=%d" %
+            (pycamb_path, int(cluster if not os.getenv("GITHUB_ACTIONS") else 1)),
+            shell=True,
+        )
         subprocess.call("chmod 755 %s" % lib_file, shell=True)
 
     if not os.path.isfile(os.path.join(pycamb_path, "camb", DLLNAME)):

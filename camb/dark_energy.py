@@ -7,11 +7,13 @@ class DarkEnergyModel(F2003Class):
     """
     Abstract base class for dark energy model implementations.
     """
+
     _fields_ = [
         ("__is_cosmological_constant", c_bool),
         ("__is_no_mod_w", c_bool),
         ("__is_no_mod_P", c_bool),
-        ("__num_perturb_equations", c_int)]
+        ("__num_perturb_equations", c_int),
+    ]
 
     _fields_ = [("__is_cosmological_constant", c_bool), ("__num_perturb_equations", c_int)]
 
@@ -91,19 +93,20 @@ class DarkEnergyPressure(DarkEnergyModel):
     """
     Class implementing the parameterization of the dark energy pressure as a function of scale factor.
     """
-    _fortran_class_module_ = 'DarkEnergyPressure'
-    _fortran_class_name_ = 'TDarkEnergyDensityAndPressure'
+
+    _fortran_class_module_ = "DarkEnergyPressure"
+    _fortran_class_name_ = "TDarkEnergyDensityAndPressure"
 
     _fields_ = [
         ("P", c_double, "P(0)"),
         ("rho", c_double, "rho(0)"),
         ("cs2", c_double, "fluid rest-frame sound speed squared"),
-        ("__no_perturbations", c_bool, "turn off perturbations (unphysical, so hidden in Python)")
+        ("__no_perturbations", c_bool, "turn off perturbations (unphysical, so hidden in Python)"),
     ]
 
     _methods_ = [
-        ('SetPTable', [numpy_1d, numpy_1d, POINTER(c_int)]),
-        ('SetrhoTable', [numpy_1d, numpy_1d, POINTER(c_int)])
+        ("SetPTable", [numpy_1d, numpy_1d, POINTER(c_int)]),
+        ("SetrhoTable", [numpy_1d, numpy_1d, POINTER(c_int)]),
     ]
 
     def set_params(self, P=-1.0, rho=0.0, cs2=1.0):
@@ -121,7 +124,7 @@ class DarkEnergyPressure(DarkEnergyModel):
 
     def validate_params(self):
         if self.P > self.rho:
-            raise CAMBError('dark energy model has P > rho')
+            raise CAMBError("dark energy model has P > rho")
 
     def set_P_a_table(self, a, P):
         """
@@ -132,11 +135,11 @@ class DarkEnergyPressure(DarkEnergyModel):
         :return: self
         """
         if len(a) != len(P):
-            raise ValueError('Dark energy P(a) table non-equal sized arrays')
+            raise ValueError("Dark energy P(a) table non-equal sized arrays")
         if not np.isclose(a[-1], 1):
-            raise ValueError('Dark energy P(a) arrays must end at a=1')
+            raise ValueError("Dark energy P(a) arrays must end at a=1")
         if np.any(a <= 0):
-            raise ValueError('Dark energy P(a) table cannot be set for a<=0')
+            raise ValueError("Dark energy P(a) table cannot be set for a<=0")
 
         a = np.ascontiguousarray(a, dtype=np.float64)
         P = np.ascontiguousarray(P, dtype=np.float64)
@@ -153,11 +156,11 @@ class DarkEnergyPressure(DarkEnergyModel):
         :return: self
         """
         if len(a) != len(rho):
-            raise ValueError('Dark energy rho(a) table non-equal sized arrays')
+            raise ValueError("Dark energy rho(a) table non-equal sized arrays")
         if not np.isclose(a[-1], 1):
-            raise ValueError('Dark energy rho(a) arrays must end at a=1')
+            raise ValueError("Dark energy rho(a) arrays must end at a=1")
         if np.any(a <= 0):
-            raise ValueError('Dark energy rho(a) table cannot be set for a<=0')
+            raise ValueError("Dark energy rho(a) table cannot be set for a<=0")
 
         a = np.ascontiguousarray(a, dtype=np.float64)
         rho = np.ascontiguousarray(rho, dtype=np.float64)
@@ -217,8 +220,8 @@ class DarkEnergyPressurePPF(DarkEnergyPressure):
     Class implementing the dark energy pressure parameterization in the PPF perturbation approximation
     """
 
-    _fortran_class_module_ = 'DarkEnergyPressurePPF'
-    _fortran_class_name_ = 'TDarkEnergyPressurePPF'
+    _fortran_class_module_ = "DarkEnergyPressurePPF"
+    _fortran_class_name_ = "TDarkEnergyPressurePPF"
 
 
 @fortran_class
@@ -329,8 +332,4 @@ class EarlyQuintessence(Quintessence):
 
 
 # short names for models that support w/wa
-<<<<<<< HEAD
-F2003Class._class_names.update({'fluid': DarkEnergyFluid, 'ppf': DarkEnergyPPF, 'pressureppf': DarkEnergyPressurePPF})
-=======
-F2003Class._class_names.update({"fluid": DarkEnergyFluid, "ppf": DarkEnergyPPF})
->>>>>>> upstream/master
+F2003Class._class_names.update({"fluid": DarkEnergyFluid, "ppf": DarkEnergyPPF, "pressureppf": DarkEnergyPressurePPF})

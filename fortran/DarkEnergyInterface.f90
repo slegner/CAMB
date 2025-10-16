@@ -20,9 +20,9 @@
     procedure :: PerturbationEvolve
     procedure :: PrintFeedback
     ! do not have to implement w_de or grho_de if BackgroundDensityAndPressure is inherited directly
-    procedure :: w_de
+    procedure :: w_de => TDarkEnergyModel_w_de
     procedure :: P_de
-    procedure :: grho_de
+    procedure :: grho_de => TDarkEnergyModel_grho_de
     procedure :: Effective_w_wa !Used as approximate values for non-linear corrections
     end type TDarkEnergyModel
 
@@ -121,9 +121,9 @@
         if (.not. this%is_no_mod_P) then
             if (present(P)) then
                 P = this%P_de(a)
-                w = P / (grhov_t /(grhov * a * a)) 
+                w = P / (grhov_t /(grhov * a * a))
             end if
-        end if 
+        end if
     end if
 
     end subroutine BackgroundDensityAndPressure

@@ -23,10 +23,9 @@ from .baseconfig import (
     numpy_1d,
     numpy_1d_int,
 )
-from .dark_energy import DarkEnergyEqnOfState, DarkEnergyModel
+from .dark_energy import DarkEnergyEqnOfState, DarkEnergyModel, DarkEnergyPressure
 from .initialpower import InitialPower, SplinedInitialPower
 from .nonlinear import NonLinearModel
-from .dark_energy import DarkEnergyModel, DarkEnergyEqnOfState, DarkEnergyPressure
 from .recombination import RecombinationModel
 from .reionization import ReionizationModel
 from .sources import SourceWindow
@@ -845,7 +844,7 @@ class CAMBparams(F2003Class):
         self.DarkEnergy.set_w_a_table(a, w)
         return self
 
-    def set_dark_energy_rho_p_a(self, a_rho, rho, a_p, p, dark_energy_model='pressureppf'):
+    def set_dark_energy_rho_p_a(self, a_rho, rho, a_p, p, dark_energy_model="pressureppf"):
         """
         Set the dark energy density and pressure from tabulated values (which are cubic spline interpolated).
 
@@ -859,7 +858,6 @@ class CAMBparams(F2003Class):
         self.DarkEnergy.set_P_a_table(a_p, p)
         self.DarkEnergy.set_rho_a_table(a_rho, rho)
         return self
-
 
     def get_zre(self):
         return self.Reion.get_zre(self)
