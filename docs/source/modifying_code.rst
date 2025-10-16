@@ -12,6 +12,8 @@ model you'll generally need to modify the code. Simple cases that do not need co
 
 In these cases, you can just pass in an interpolation table from Python to encapsulate the modified physics.
 
+For understanding CAMB's variable naming conventions and gauge choices when modifying the code, see the :doc:`variables_guide`.
+
 Defining new classes
 --------------------
 
@@ -82,6 +84,8 @@ and hence can be trivially modified for any new classes. The function is essenti
 map Python and strongly typed Fortran classes consistently (not something that is supported by standard `iso_c_binding`).
 The `ReadParams` function is only needed if you want to also be able to load parameters from `.ini` files, rather than just
 using them via Python. The `PythonClass` method is not strictly needed.
+
+There are separate `fortran code docs <https://camb.info/doc/>`_.
 
 Other code changes
 ------------------
