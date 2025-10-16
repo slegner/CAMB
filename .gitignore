@@ -38,3 +38,4 @@ Inspector/
 .ipynb_checkpoints
 camb/HighLExtrapTemplate_lenspotentialCls.dat
 .vscode/
+.mcp_handley_lab/
